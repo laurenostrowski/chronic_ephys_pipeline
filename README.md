@@ -37,16 +37,6 @@ Environment to use: **spikeprep**.
 
 This *optional* notebook...
 
-Environment to use: **birdsong**.
-
-#### Errors you might encounter
-- **Error message:** description
-
 ## 6-convert_to_NWB
 
 This notebook converts the outputs of processing pipeline to the [Neuroscience without Borders (NWB) Data Standard](https://www.nwb.org/nwb-neurophysiology/) formatting.
-
-Environment to use: **...**
-
-#### Errors you might encounter
-- **Error message:** description
