@@ -6,7 +6,7 @@ Pipeline built in the Gentner Lab that takes in chronic single-unit electrophysi
 
 This notebook handles the initial preprocessing of neural data from SpikeGLX and OpenEphys as well as other simultaneous data streams (audio or pressure).
 
-Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but is compatible with certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
+Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but requires certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
 
 #### Errors you might encounter
 - **Number of edges in the syn ttl events of pattern and target don't match:** sy.sync_all will throw an error if streams are different lengths. For example, if the neuropixel comes unplugged during a recording session, NIDQ and WAV streams will be of the same length, different than the length of LFP and AP streams (see bird: z_c5o30_23, sess: 2023-08-12 for an example). This is because NIDQ contains a microphone channel that will continue recording even if the neuropixel data is disrupted.
@@ -16,7 +16,7 @@ Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on
 
 This notebook provides an interface for you to manually curate automatically detected bouts of song. You can manually inspect putative bouts and trim the bout start and stop indices (precise alignment to the bout will improve the performance of the syllable curation algorithm later on).
 
-Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but is compatible with certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
+Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but requires certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
 
 ## 3-sort_spikes
 
