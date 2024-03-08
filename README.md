@@ -16,7 +16,7 @@ Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on
 
 This notebook provides an interface for you to manually curate automatically detected bouts of song. You can manually inspect putative bouts and trim the bout start and stop indices (precise alignment to the bout will improve the performance of the syllable curation algorithm later on).
 
-Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke Arneodo's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but requires certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
+Environment to use: **songprep**.
 
 ## 3-sort_spikes
 
