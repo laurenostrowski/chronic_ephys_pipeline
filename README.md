@@ -5,6 +5,7 @@ Pipeline built in the Gentner Lab that takes in chronic single-unit electrophysi
 ## 1-preprocess_acoustics
 
 This notebook handles the initial preprocessing of neural data from SpikeGLX and OpenEphys as well as other simultaneous data streams (audio or pressure).
+
 Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but is compatible with certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
 
 #### Errors you might encounter
@@ -14,16 +15,19 @@ Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on
 ## 2-curate_acoustics
 
 This notebook provides an interface for you to manually curate automatically detected bouts of song. You can manually inspect putative bouts and trim the bout start and stop indices (precise alignment to the bout will improve the performance of the syllable curation algorithm later on).
+
 Environment to use: **songprep**. This notebook and *2-curate_acoustics* rely on Zeke's pipeline <u>ceciestunepipe</u>. Ceciestunepipe handles loading and syncing neural and audio data, but is compatible with certain early versions of published packages that have since been updated. The environment **songprep** is compatible with ceciestunepipe, and is therefore used for preprocessing steps, but should not be used for forward analyses.
 
 ## 3-sort_spikes
 
 This notebook runs an automatic spike sorting algorithm on the neural data, defaulting to the spike sorting algorithm [Kilosort 3](https://kilosort.readthedocs.io/en/latest/). *Kilosort 4 was released on March 3rd, 2024 and will be added to the notebook as the default sorting algorithm when integrated into SpikeInterface*.
+
 Environment to use: **spikeprep**.
 
 ## 4-curate_spikes
 
 This notebook allows you to manually curate the outputs of an automatic spike sorting algorithm using the web-based viewer provided by [SpikeInterface](https://spikeinterface.readthedocs.io/en/latest/).
+
 Environment to use: **spikeprep**.
 
 #### Errors you might encounter
@@ -32,6 +36,7 @@ Environment to use: **spikeprep**.
 ## 5-cluster_acoustics
 
 This *optional* notebook...
+
 Environment to use: **birdsong**.
 
 #### Errors you might encounter
@@ -40,6 +45,7 @@ Environment to use: **birdsong**.
 ## 6-convert_to_NWB
 
 This notebook converts the outputs of processing pipeline to the [Neuroscience without Borders (NWB) Data Standard](https://www.nwb.org/nwb-neurophysiology/) formatting.
+
 Environment to use: **...**
 
 #### Errors you might encounter
