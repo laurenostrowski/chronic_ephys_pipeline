@@ -20,7 +20,7 @@ Environment to use: **songprep**.
 
 ## 3-sort_spikes
 
-This notebook runs an automatic spike sorting algorithm on the neural data, defaulting to the spike sorting algorithm [Kilosort 3](https://kilosort.readthedocs.io/en/latest/). *Kilosort 4 was released on March 3rd, 2024 and will be added to the notebook as the default sorting algorithm when integrated into SpikeInterface*.
+This notebook runs an automatic spike sorting algorithm on the neural data, defaulting to the spike sorting algorithm [Kilosort 4](https://kilosort.readthedocs.io/en/latest/). For multi-shank Neuropixels 2.0 probes, this notebook will artificially stack recording blocks vertically in the probe layout, treating them as a single shank with a ~100 micron gap between discontiguous recording blocks, which drastically improves sorting time. Original contact coordinates are recovered in *4-curate_spikes*
 
 Environment to use: **spikeprep**.
 
