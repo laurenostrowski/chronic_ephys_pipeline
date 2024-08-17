@@ -19,6 +19,7 @@ os.environ["KILOSORT3_PATH"] = '/mnt/cube/chronic_ephys/code/Kilosort'
 import spikeinterface.full as si
 import sys
 import traceback
+import torch
 sys.path.append('/mnt/cube/lo/envs/ceciestunepipe/')
 from ceciestunepipe.file import bcistructure as et
 from ceciestunepipe.mods import probe_maps as pm
@@ -29,7 +30,7 @@ si.get_default_sorter_params('kilosort4')
 
 # non default spike sorting parameters
 sort_params_dict_ks3 = {'minFR':0.001, 'minfr_goodchannels':0.001} # kilosort 3
-sort_params_dict_ks4_npx = {'nblocks':5, 'Th_universal':8, 'Th_learned':7, 'dmin':15, 'dminx':32} # kilosort 4, neuropixels (set dmin and dminx to true pitch)
+sort_params_dict_ks4_npx = {'batch_size':30000, 'nblocks':5, 'Th_universal':8, 'Th_learned':7, 'dmin':15, 'dminx':32} # kilosort 4, neuropixels (set dmin and dminx to true pitch)
 sort_params_dict_ks4_nnx64 = {'nblocks':0, 'nearest_templates':64,
                               'Th_universal':8, 'Th_learned':7} # kilosort 4, neuronexus 64 chan
 
@@ -61,10 +62,10 @@ skip_failed = False
 
 # session info
 bird_rec_dict = {
-    'z_p5y10_23':[
-        {'sess_par_list':['2024-05-16'], # sessions (will process all epochs within)
+    'z_r5r13_24':[
+        {'sess_par_list':['2024-08-06'], # sessions (will process all epochs within)
          'probe':{'probe_type':'neuropixels-2.0'}, # probe specs
-         'sort':'sort_0', # label for this sort instance
+         'sort':'sort_2', # label for this sort instance
          'sorter':'kilosort4', # sort method
          'sort_params':sort_params_dict_ks4_npx, # non-default sort params
          'wave_params':wave_params_dict, # waveform extraction params
@@ -106,7 +107,8 @@ for this_bird in bird_rec_dict.keys():
                 # set output directory
                 epoch_struct = et.sgl_struct(sess_par,this_epoch,ephys_software=sess_par['ephys_software'])
                 sess_par['epoch'] = this_epoch
-                sort_folder = epoch_struct['folders']['derived'] + '/{}/{}/'.format(sess_par['sorter'],sess_par['sort'])
+                sort_path = epoch_struct['folders']['derived'] + '/{}/{}/'.format(sess_par['sorter'],sess_par['sort'])
+                sorting_analyzer_path = sort_path + 'sorting_analyzer/'
                 
                 # get spike sort log
                 try:
@@ -169,39 +171,22 @@ for this_bird in bird_rec_dict.keys():
                             sort_params[this_param] = this_sess_config['sort_params'][this_param]
                         # run sort
                         print('sort..')
-                        this_sort = si.run_sorter(sorter_name=this_sess_config['sorter'],recording=this_rec_p,output_folder=sort_folder,
+                        torch.cuda.empty_cache()
+                        this_sort = si.run_sorter(sorter_name=this_sess_config['sorter'],recording=this_rec_p,output_folder=sort_path,
                                              remove_existing_folder=True,delete_output_folder=False,delete_container_files=False,
                                              verbose=verbose,raise_error=raise_error,**sort_params)
-                        # bandpass recording before waveform extraction
-                        print('bandpass..')
+                        torch.cuda.empty_cache()
+                        # bandpass recording before running analyzer
                         this_rec_pf = si.bandpass_filter(recording=this_rec_p)
-                        # extract waveforms
-                        print('waveform..')
-                        wave_params = this_sess_config['wave_params']
-                        wave = si.extract_waveforms(this_rec_pf,this_sort,folder=os.path.join(sort_folder,'waveforms'),
-                                                    ms_before=wave_params['ms_before'],ms_after=wave_params['ms_after'],
-                                                    max_spikes_per_unit=wave_params['max_spikes_per_unit'],
-                                                    sparse=wave_params['sparse'],num_spikes_for_sparsity=wave_params['num_spikes_for_sparsity'],
-                                                    method=wave_params['method'],radius_um=wave_params['radius_um'],overwrite=True,**job_kwargs)
-                        # compute metrics
-                        print('metrics..')
-                        loc = si.compute_unit_locations(waveform_extractor=wave)
-                        cor = si.compute_correlograms(waveform_or_sorting_extractor=wave)
-                        sim = si.compute_template_similarity(waveform_extractor=wave)
-                        amp = si.compute_spike_amplitudes(waveform_extractor=wave,**job_kwargs)
-                        pca = si.compute_principal_components(waveform_extractor=wave,n_components=wave_params['n_components'],
-                                                              mode=wave_params['mode'],**job_kwargs)
-                        qms = si.get_quality_metric_list()
-                        metric_names = []
-                        bad_metrics = []
-                        for qm in qms:
-                            try:
-                                si.compute_quality_metrics(waveform_extractor=wave,verbose=False,metric_names=[qm],**job_kwargs)
-                                metric_names.append(qm)
-                            except:
-                                bad_metrics.append(qm)
-                        met = si.compute_quality_metrics(waveform_extractor=wave,verbose=verbose,metric_names=metric_names,**job_kwargs)
-
+                        # run sorting analyzer
+                        print('sorting analyzer..')
+                        analyzer = si.create_sorting_analyzer(sorting=this_sort,recording=this_rec_pf,format="binary_folder",
+                                                              sparse=True,return_scaled=True,folder=sorting_analyzer_folder)
+                        ext_compute_all = analyzer.get_computable_extensions()
+                        for this_ext in ext_compute_all:
+                            print(this_ext + '..')
+                            analyzer.compute(this_ext)
+                        
                         # mark complete
                         print('COMPLETE!!')
 
