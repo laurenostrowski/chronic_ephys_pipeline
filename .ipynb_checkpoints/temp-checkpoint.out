@@ -1,0 +1,4 @@
+  File "temp.py", line 1
+    %matplotlib widget
+    ^
+SyntaxError: invalid syntax

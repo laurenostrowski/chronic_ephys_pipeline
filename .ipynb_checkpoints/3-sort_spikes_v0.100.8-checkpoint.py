@@ -30,7 +30,7 @@ si.get_default_sorter_params('kilosort4')
 
 # non default spike sorting parameters
 sort_params_dict_ks3 = {'minFR':0.001, 'minfr_goodchannels':0.001} # kilosort 3
-sort_params_dict_ks4_npx = {'nblocks':5, 'Th_universal':8, 'Th_learned':7, 'dmin':15, 'dminx':32} # kilosort 4, neuropixels (set dmin and dminx to true pitch)
+sort_params_dict_ks4_npx = {'batch_size':30000, 'nblocks':5, 'Th_universal':8, 'Th_learned':7, 'dmin':15, 'dminx':32} # kilosort 4, neuropixels (set dmin and dminx to true pitch)
 sort_params_dict_ks4_nnx64 = {'nblocks':0, 'nearest_templates':64,
                               'Th_universal':8, 'Th_learned':7} # kilosort 4, neuronexus 64 chan
 
@@ -65,7 +65,7 @@ bird_rec_dict = {
     'z_r5r13_24':[
         {'sess_par_list':['2024-08-06'], # sessions (will process all epochs within)
          'probe':{'probe_type':'neuropixels-2.0'}, # probe specs
-         'sort':'sort_1', # label for this sort instance
+         'sort':'sort_2', # label for this sort instance
          'sorter':'kilosort4', # sort method
          'sort_params':sort_params_dict_ks4_npx, # non-default sort params
          'wave_params':wave_params_dict, # waveform extraction params
@@ -211,7 +211,7 @@ for this_bird in bird_rec_dict.keys():
                         # log complete sort
                         if not os.path.exists(log_dir): os.makedirs(log_dir)
                         with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'w') as f:
-                            f.write(sess_par['bird']+' '+sess_par['sess']+' sort complete without error\n\n')
+                            f.write(sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort complete without error\n\n')
                             f.write('Sort method: '+this_sess_config['sorter']+'\n\n')
                             f.write('Sort params: '+str(sort_params)+'\n\n')
                             f.write('Computed quality metrics: '+str(metric_names)+'\n\n')
@@ -225,7 +225,7 @@ for this_bird in bird_rec_dict.keys():
                         # log failed sort
                         if not os.path.exists(log_dir): os.makedirs(log_dir)
                         with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'w') as f:
-                            f.write(sess_par['bird']+' '+sess_par['sess']+' sort failed\n')
+                            f.write(sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort failed\n')
                             f.write(traceback.format_exc())
                         sort_summary = [this_bird,this_sess,sess_par['ephys_software'],this_epoch,'FAIL']
                 else:

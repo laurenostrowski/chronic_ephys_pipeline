@@ -46,7 +46,7 @@ verbose = True
 raise_error = False
 
 # restrict sorting to a specific GPU
-restrict_to_gpu = 1 # 0 1 None
+restrict_to_gpu = 2 # None
 
 # use specific GPU if specified
 if restrict_to_gpu is not None:
@@ -62,16 +62,16 @@ skip_failed = False
 
 # session info
 bird_rec_dict = {
-    'z_r5r13_24':[
-        {'sess_par_list':['2024-08-06'], # sessions (will process all epochs within)
+    'z_c7r3_24':[
+        {'sess_par_list':['2024-10-27'], # sessions (will process all epochs within)
          'probe':{'probe_type':'neuropixels-2.0'}, # probe specs
-         'sort':'sort_2', # label for this sort instance
+         'sort':'sort_0', # label for this sort instance
          'sorter':'kilosort4', # sort method
          'sort_params':sort_params_dict_ks4_npx, # non-default sort params
          'wave_params':wave_params_dict, # waveform extraction params
          'ephys_software':'sglx' # sglx or oe
         },
-    ],
+    ]
 }
 
 
@@ -101,12 +101,11 @@ for this_bird in bird_rec_dict.keys():
                         'sort':this_sess_config['sort']}
             # get epochs
             sess_epochs = et.list_ephys_epochs(sess_par)
-            
+
             for this_epoch in sess_epochs:
                 
                 # set output directory
                 epoch_struct = et.sgl_struct(sess_par,this_epoch,ephys_software=sess_par['ephys_software'])
-                sess_par['epoch'] = this_epoch
                 sort_path = epoch_struct['folders']['derived'] + '/{}/{}/'.format(sess_par['sorter'],sess_par['sort'])
                 sorting_analyzer_path = sort_path + 'sorting_analyzer/'
                 
@@ -114,12 +113,12 @@ for this_bird in bird_rec_dict.keys():
                 try:
                     with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'r') as f:
                         log_message=f.readline() # read the first line of the log file
-                    if log_message[:-1] == sess_par['bird']+' '+sess_par['sess']+' sort complete without error':
-                        print(sess_par['bird'],sess_par['sess'],'already exists -- skipping sort')
+                    if log_message[:-1] == sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort complete without error':
+                        print(sess_par['bird'],sess_par['sess'],this_epoch,'already exists -- skipping sort')
                         run_proc = False
-                    elif log_message[:-1] == sess_par['bird']+' '+sess_par['sess']+' sort failed':
+                    elif log_message[:-1] == sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort failed':
                         if skip_failed:
-                            print(sess_par['bird'],sess_par['sess'],'previously failed -- skipping sort')
+                            print(sess_par['bird'],sess_par['sess'],this_epoch,'previously failed -- skipping sort')
                             run_proc = False
                         else:
                             run_proc = True
@@ -181,7 +180,7 @@ for this_bird in bird_rec_dict.keys():
                         # run sorting analyzer
                         print('sorting analyzer..')
                         analyzer = si.create_sorting_analyzer(sorting=this_sort,recording=this_rec_pf,format="binary_folder",
-                                                              sparse=True,return_scaled=True,folder=sorting_analyzer_folder)
+                                                              sparse=True,return_scaled=True,folder=sorting_analyzer_path)
                         ext_compute_all = analyzer.get_computable_extensions()
                         for this_ext in ext_compute_all:
                             print(this_ext + '..')
@@ -193,11 +192,10 @@ for this_bird in bird_rec_dict.keys():
                         # log complete sort
                         if not os.path.exists(log_dir): os.makedirs(log_dir)
                         with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'w') as f:
-                            f.write(sess_par['bird']+' '+sess_par['sess']+' sort complete without error\n\n')
+                            f.write(sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort complete without error\n\n')
                             f.write('Sort method: '+this_sess_config['sorter']+'\n\n')
                             f.write('Sort params: '+str(sort_params)+'\n\n')
-                            f.write('Computed quality metrics: '+str(metric_names)+'\n\n')
-                            f.write('Failed quality metrics: '+str(bad_metrics)+'\n')
+                            f.write('Computable extensions: '+str(ext_compute_all)+'\n\n')
                         sort_summary = [this_bird,this_sess,sess_par['ephys_software'],this_epoch,'COMPLETE']
                     
                     except Exception as e:
@@ -207,7 +205,7 @@ for this_bird in bird_rec_dict.keys():
                         # log failed sort
                         if not os.path.exists(log_dir): os.makedirs(log_dir)
                         with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'w') as f:
-                            f.write(sess_par['bird']+' '+sess_par['sess']+' sort failed\n')
+                            f.write(sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort failed\n')
                             f.write(traceback.format_exc())
                         sort_summary = [this_bird,this_sess,sess_par['ephys_software'],this_epoch,'FAIL']
                 else:

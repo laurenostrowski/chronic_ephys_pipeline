@@ -211,7 +211,7 @@ for this_bird in bird_rec_dict.keys():
                         # log complete sort
                         if not os.path.exists(log_dir): os.makedirs(log_dir)
                         with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'w') as f:
-                            f.write(sess_par['bird']+' '+sess_par['sess']+' sort complete without error\n\n')
+                            f.write(sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort complete without error\n\n')
                             f.write('Sort method: '+this_sess_config['sorter']+'\n\n')
                             f.write('Sort params: '+str(sort_params)+'\n\n')
                             f.write('Computed quality metrics: '+str(metric_names)+'\n\n')
@@ -225,7 +225,7 @@ for this_bird in bird_rec_dict.keys():
                         # log failed sort
                         if not os.path.exists(log_dir): os.makedirs(log_dir)
                         with open(os.path.join(log_dir, this_epoch+'_spikesort_'+this_sess_config['sort']+'.log'), 'w') as f:
-                            f.write(sess_par['bird']+' '+sess_par['sess']+' sort failed\n')
+                            f.write(sess_par['bird']+' '+sess_par['sess']+' '+this_epoch+' sort failed\n')
                             f.write(traceback.format_exc())
                         sort_summary = [this_bird,this_sess,sess_par['ephys_software'],this_epoch,'FAIL']
                 else:
