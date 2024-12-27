@@ -46,7 +46,7 @@ verbose = True
 raise_error = False
 
 # restrict sorting to a specific GPU
-restrict_to_gpu = 2 # None
+restrict_to_gpu = 0 # None
 
 # use specific GPU if specified
 if restrict_to_gpu is not None:
@@ -62,8 +62,8 @@ skip_failed = False
 
 # session info
 bird_rec_dict = {
-    'z_c7r3_24':[
-        {'sess_par_list':['2024-10-27'], # sessions (will process all epochs within)
+    'z_r7c3_23':[
+        {'sess_par_list':['2024-06-03'], # sessions (will process all epochs within)
          'probe':{'probe_type':'neuropixels-2.0'}, # probe specs
          'sort':'sort_0', # label for this sort instance
          'sorter':'kilosort4', # sort method
@@ -101,7 +101,7 @@ for this_bird in bird_rec_dict.keys():
                         'sort':this_sess_config['sort']}
             # get epochs
             sess_epochs = et.list_ephys_epochs(sess_par)
-            sess_epochs = ['0658_g0', '0959_g0']
+            sess_epochs = ['1236_g0','1527_g0']
             concat_epochs = '-'.join(sess_epochs) # process all epochs together -- edit to concatenate only some if desired
             
             # set output directory
